@@ -26,8 +26,9 @@ function getAllMoves(position) {
 }
 
 class Node {
-  constructor(field) {
+  constructor(field, parent) {
     this.field = field;
+    this.parent = parent || null;
     this.moves = null;
   }
 }
@@ -35,24 +36,52 @@ class Node {
 class Tree {
   constructor(node) {
     this.root = node;
+    this.lastLevelNodes = [node];
   }
 
-  getAnotherMove(node) {
-    const moves = getAllMoves(node.field);
+  getAnotherMove(parent) {
+    const moves = getAllMoves(parent.field);
     const movesNodes = [];
     for (let move of moves) {
-        const node = new Node(move);
-        movesNodes.push(node);
-    };
-    node.moves = movesNodes;
+      const node = new Node(move, parent);
+      movesNodes.push(node);
+    }
+    parent.moves = movesNodes;
+    this.lastLevelNodes.push(...movesNodes);
   }
 
+  getAnotherLevel() {
+    const getThis = this;
+    const lastLevelRemembered = this.lastLevelNodes.map((e) => {
+      return e;
+    });
+    this.lastLevelNodes = [];
+    for (const node of lastLevelRemembered) {
+      getThis.getAnotherMove(node);
+    }
+  }
+  checkLevel(value) {
+    let found = [];
+    function checkField(field) {
+      if (value[0] === field[0] && value[1] === field[1]) found.push(field);
+    }
+    const fields = this.lastLevelNodes;
+    for (let field of fields) {
+      checkField(field.field);
+    }
+
+    if (found.length > 0) {
+      return found;
+    } else {
+      this.getAnotherLevel();
+      return this.checkLevel(value);
+    }
+  }
 }
 
 function knightMoves(a, b) {}
 
 const rootNode = new Node([2, 2]);
 const testTree = new Tree(rootNode);
-testTree.getAnotherMove(testTree.root);
-console.log(testTree);
 
+console.log(testTree.checkLevel([4, 5]));
