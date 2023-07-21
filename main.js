@@ -81,7 +81,7 @@ class Tree {
   getWayTo(array) {
     const waysArray = [];
     function getWay(node) {
-      const wayArray = [node.field];
+      const wayArray = [];
       function getParentWay(node) {
         if (!node) return;
         else {
@@ -108,12 +108,12 @@ class Tree {
   }
 }
 
-function knightMoves(a, b) {
-
+function knightMoves(startingPosition, finalPosition) {
+  const rootNode = new Node(startingPosition);
+  const startingTree = new Tree(rootNode);
+  const moves = startingTree.checkLevel(finalPosition);
+  const ways = startingTree.getWayTo(moves);
+  return startingTree.printWays(ways);
 }
 
-const rootNode = new Node([2, 2]);
-const testTree = new Tree(rootNode);
-const testArray = testTree.checkLevel([5, 6]);
-const testArray2 = testTree.getWayTo(testArray);
-console.log(testTree.printWays(testArray2));
+console.log(knightMoves([6, 3], [1, 5]));
