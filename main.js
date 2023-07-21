@@ -63,11 +63,12 @@ class Tree {
   checkLevel(value) {
     let found = [];
     function checkField(field) {
-      if (value[0] === field[0] && value[1] === field[1]) found.push(field);
+      if (value[0] === field.field[0] && value[1] === field.field[1])
+        found.push(field);
     }
     const fields = this.lastLevelNodes;
     for (let field of fields) {
-      checkField(field.field);
+      checkField(field);
     }
 
     if (found.length > 0) {
@@ -77,11 +78,42 @@ class Tree {
       return this.checkLevel(value);
     }
   }
+  getWayTo(array) {
+    const waysArray = [];
+    function getWay(node) {
+      const wayArray = [node.field];
+      function getParentWay(node) {
+        if (!node) return;
+        else {
+          wayArray.push(node.field);
+          getParentWay(node.parent);
+        }
+      }
+      getParentWay(node);
+      return wayArray;
+    }
+    for (const field of array) {
+      waysArray.push(getWay(field));
+    }
+    return waysArray;
+  }
+  printWays(array) {
+    let outcome = `You made it in ${array[0].length} moves! Here's your path: `;
+    const stringWays = [];
+    for (const way of array) {
+      stringWays.push(way.reverse().join(' => '));
+    }
+    outcome += stringWays.join(' You could also go ');
+    return outcome;
+  }
 }
 
-function knightMoves(a, b) {}
+function knightMoves(a, b) {
+
+}
 
 const rootNode = new Node([2, 2]);
 const testTree = new Tree(rootNode);
-
-console.log(testTree.checkLevel([4, 5]));
+const testArray = testTree.checkLevel([5, 6]);
+const testArray2 = testTree.getWayTo(testArray);
+console.log(testTree.printWays(testArray2));
